@@ -29,6 +29,7 @@ class Foos < Application
 
   def create(foo)
     @foo = Foo.new(foo)
+    @foo.id = Time.now.to_i
     if @foo.save
       redirect resource(@foo), :message => {:notice => "Foo was successfully created"}
     else

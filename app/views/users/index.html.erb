@@ -1,1 +1,22 @@
-You're in index of the Users controller.
+<h1>Devver Users</h1>
+ 
+<table>
+  <tr>
+    <th>Id</th>
+    <th>Login</th>
+ 
+    <th colspan="3">Actions</th>
+  </tr>
+ 
+<% @users.each do |user| %>
+  <tr>
+    <td><%=h user.id %></td>
+    <td><%=h user.login %></td>
+    <td><%= link_to 'Show', resource(user) if user.id!=nil %></td>
+    <td><%= link_to 'Edit', resource(user, :edit) if user.id!=nil %></td>
+    <td><%= delete_button(user, "Delete #{user.login}") if user.id!=nil %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to 'Create New User', resource(:users, :new) %>
