@@ -109,6 +109,7 @@ module DataMapper
           
           query.model.load(data, query)
         end
+
       end
  
       def update(attributes, query)
@@ -179,6 +180,42 @@ module DataMapper
       def simpledb_type(model)
         model.storage_name(model.repository.name)
       end
+
+      #borrowed and edited from http://github.com/edward/dm-simpledb/tree/master
+      module Migration
+        # Returns whether the storage_name exists.
+        # @param storage_name<String> a String defining the name of a domain
+        # @return <Boolean> true if the storage exists
+        def storage_exists?(storage_name)
+          sdb.domains.detect {|d| d.name == storage_name }
+        end
+        
+        def create_model_storage(repository, model)
+          sdb.create_domain(@uri[:domain])
+        end
+        
+        #On SimpleDB you probably don't want to destroy the whole domain
+        #if you are just adding fields it is automatically supported
+        #default to non destructive migrate, to destroy run
+        #rake db:automigrate destroy=true
+        def destroy_model_storage(repository, model)
+          if ENV['destroy']!=nil && ENV['destroy']=='true'
+            sdb.delete_domain(@uri[:domain])
+          end
+        end
+        
+        #TODO look at github panda simpleDB for serials support?
+        module SQL
+          def supports_serial?
+            false
+          end
+        end
+        
+        include SQL
+        
+      end # module Migration
+      
+      include Migration
       
     end # class SimpleDBAdapter
     
