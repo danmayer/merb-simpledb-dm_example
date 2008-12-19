@@ -1,13 +1,13 @@
 require 'rubygems'
 require 'dm-core'
 require 'aws_sdb'
-#require 'amazon_sdb'
 require 'digest/sha1'
+require 'dm-aggregates'
  
 module DataMapper
   module Adapters
     class SimpleDBAdapter < AbstractAdapter
- 
+
       def create(resources)
         created = 0
         resources.each do |resource|
@@ -55,10 +55,14 @@ module DataMapper
           results.each do |result|
             data = query.fields.map do |property|
               value = result[property.field.to_s]
-              if value.size > 1
-                value.map {|v| property.typecast(v) }
+              if value != nil
+                if value.size > 1
+                  value.map {|v| property.typecast(v) }
+                else
+                  property.typecast(value[0])
+                end
               else
-                property.typecast(value[0])
+                 property.typecast(nil)
               end
             end
             collection.load(data)
@@ -67,21 +71,6 @@ module DataMapper
       end
       
       def read_one(query)
-  #       result = read_many(query)
-#         if result.length > 0
-#           result = result[0]
-#           debugger
-#           query.model.load(result, query)
-#         else
-#           result = nil
-#         end
-
-
-
-        # item_name = item_name_for_query(query)
- 
-#         data = sdb.get_attributes(domain, item_name)
-
         sdb_type = simpledb_type(query.model)
         
         conditions = ["['simpledb_type' = '#{sdb_type}']"]
@@ -107,16 +96,19 @@ module DataMapper
         unless data==nil || data.empty?
           data = query.fields.map do |property|
             value = data[property.field.to_s]
-            if value.size > 1
-              value.map {|v| property.typecast(v) }
+            if value != nil
+              if value.size > 1
+                value.map {|v| property.typecast(v) }
+              else
+                  property.typecast(value[0])
+              end
             else
-              property.typecast(value[0])
+              property.typecast(nil)
             end
           end
           
           query.model.load(data, query)
         end
-        #result
       end
  
       def update(attributes, query)
