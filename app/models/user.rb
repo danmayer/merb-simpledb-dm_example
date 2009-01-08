@@ -11,8 +11,7 @@
 class User
   include DataMapper::Resource
 
-  #property :id,     Serial
-  property :id,   Integer, :serial => true
+  property :id,   Integer, :key => true
   property :login,  String
 
   validates_length      :login,        :within => 3..40

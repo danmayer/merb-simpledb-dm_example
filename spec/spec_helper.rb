@@ -13,8 +13,17 @@ require "spec" # Satisfies Autotest and anyone else not using the Rake tasks
 # here again, Merb will do it for you
 Merb.start_environment(:testing => true, :adapter => 'runner', :environment => ENV['MERB_ENV'] || 'test')
 
+DataMapper.auto_migrate!
+
 Spec::Runner.configure do |config|
   config.include(Merb::Test::ViewHelper)
   config.include(Merb::Test::RouteHelper)
   config.include(Merb::Test::ControllerHelper)
+end
+
+def get_user
+  u = User.new(:login => 'fake', :password => 'fake', :password_confirmation => 'fake')
+  u.id = (Time.now.to_f.to_s.gsub!('.','')).to_i
+  u.save!
+  u
 end

@@ -1,0 +1,39 @@
+h1. Merb Simple DB example using MerbAuth / merb-auth-slice-password
+
+h2. author: Dan Mayer dan AT devver (.) net
+
+h2.  What is it
+
+This is an example merb application showing how to use merb with Amazon's SimpleDB.The project uses the dm-adapter-simpledb, which can be found http://github.com/jeremyboles/dm-adapter-simpledb/tree/master the file is installed in the /lib
+
+This example shows how to use merb-auth, merb-auth-slice-password, and how to create and protect resources which are stored on SimpleDB. If you don't need authentication this is also just an easy to read simple app that serves as an example or a starting point for using Merb with SimpleDB. 
+
+h2. Basic Setup
+
+From Source
+<pre><code>
+git clone git://github.com/danmayer/merb-simpledb-dm_example.git
+cd merb-simpledb-dm_example
+cp ./config/database.yml.example ./config/database.yml
+edit database.yml and include your aws access_key and secret_key
+rake db:automigrate
+merb
+</code></pre>
+
+Testing against SimpleDB from your dev box can be quite slow. I actually test against sqlite3, instead most of the time. I recommend running rake spec, once to make sure it all works against SimpleDB, but after that just edit your database.yml and change your test db like so:
+
+<pre><code>test:
+  <<:       *defaults   
+  adapter:  sqlite3    
+  database: sample_test.db
+</code></pre>
+
+Then run 'rake db:automigrate MERB_ENV=test' to migrate the sqlite3 db. After that you can run your tests much faster.
+
+h3. Basic Merb-Auth instructions
+
+This app setup follows the basic instructions for Merb-Auth but adds a few more examples to make things more clear.
+
+http://github.com/wycats/merb/tree/master/merb-auth
+
+some things have been slightly altered fromt he above tutorial but it should be fairly obvious and simple. If you have any problems please contact me.

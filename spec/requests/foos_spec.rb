@@ -1,16 +1,26 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 given "a foo exists" do
-  Foo.all.destroy!
+  login_fake_user
+  Foo.all.each { |foo| foo.destroy }
   request(resource(:foos), :method => "POST", 
     :params => { :foo => { :id => nil }})
+end
+
+def login_fake_user
+  user = get_user
+  response = request url(:perform_login), :method => "PUT", :params => { :login => user.login, :password => 'fake' }
+  user
 end
 
 describe "resource(:foos)" do
   describe "GET" do
     
     before(:each) do
-      @response = request(resource(:foos))
+      @response = dispatch_to(Foos, :index) do |controller|
+        controller.session[:user]=get_user.id
+      end
+      # @response = request(resource(:foos))
     end
     
     it "responds successfully" do
@@ -26,7 +36,10 @@ describe "resource(:foos)" do
   
   describe "GET", :given => "a foo exists" do
     before(:each) do
-      @response = request(resource(:foos))
+      @response = dispatch_to(Foos, :index) do |controller|
+        controller.session[:user]=get_user.id
+      end
+      # @response = request(resource(:foos))
     end
     
     it "has a list of foos" do
@@ -37,7 +50,8 @@ describe "resource(:foos)" do
   
   describe "a successful POST" do
     before(:each) do
-      Foo.all.destroy!
+      login_fake_user
+      Foo.all.each { |foo| foo.destroy }
       @response = request(resource(:foos), :method => "POST", 
         :params => { :foo => { :id => nil }})
     end
@@ -51,19 +65,21 @@ end
 
 describe "resource(@foo)" do 
   describe "a successful DELETE", :given => "a foo exists" do
-     before(:each) do
-       @response = request(resource(Foo.first), :method => "DELETE")
-     end
-
-     it "should redirect to the index action" do
-       @response.should redirect_to(resource(:foos))
-     end
-
-   end
+    before(:each) do
+      login_fake_user
+      @response = request(resource(Foo.first), :method => "DELETE")
+    end
+    
+    it "should redirect to the index action" do
+      @response.should redirect_to(resource(:foos))
+    end
+    
+  end
 end
 
 describe "resource(:foos, :new)" do
   before(:each) do
+    login_fake_user
     @response = request(resource(:foos, :new))
   end
   
@@ -74,6 +90,7 @@ end
 
 describe "resource(@foo, :edit)", :given => "a foo exists" do
   before(:each) do
+    login_fake_user
     @response = request(resource(Foo.first, :edit))
   end
   
@@ -86,6 +103,7 @@ describe "resource(@foo)", :given => "a foo exists" do
   
   describe "GET" do
     before(:each) do
+      login_fake_user
       @response = request(resource(Foo.first))
     end
   
@@ -97,6 +115,7 @@ describe "resource(@foo)", :given => "a foo exists" do
   describe "PUT" do
     before(:each) do
       @foo = Foo.first
+      login_fake_user
       @response = request(resource(@foo), :method => "PUT", 
         :params => { :foo => {:id => @foo.id} })
     end
