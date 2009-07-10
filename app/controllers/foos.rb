@@ -4,7 +4,8 @@ class Foos < Application
   before :ensure_authenticated
 
   def index
-    @foos = Foo.all
+    #just an example of how to use the ordering and limits on SDB, same as any DM
+    @foos = Foo.all(:order => [:time.desc], :limit => 10)
     display @foos
   end
 
