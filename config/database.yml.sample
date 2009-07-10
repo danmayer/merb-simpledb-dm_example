@@ -6,8 +6,9 @@ development: &defaults
   #database: sample_development.db
   adapter: simpledb        
   database: 'default'
-  access_key_id: '1_your_access_key_1'
-  secret_access_key: 'b_your_secret_key_b'
+  access_key: '1_your_access_key_1'
+  secret_key: 'b_your_secret_key_b'
+
   domain: 'your_app_development'
   base_url: 'http://sdb.amazon.com'
 
