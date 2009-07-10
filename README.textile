@@ -1,3 +1,6 @@
+THE HEAD OF THIS WAS MOVED:
+http://github.com/devver/merb-simpledb-dm_example/tree/master
+
 h1. Merb Simple DB example using MerbAuth / merb-auth-slice-password
 
 h2. author: Dan Mayer dan AT devver (.) net
